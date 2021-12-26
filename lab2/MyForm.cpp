@@ -16,17 +16,21 @@ void main(cli::array<String^>^ args) {
 
 System::Void NMLab2::MyForm::button1_Click(System::Object^ sender, System::EventArgs^ e)
 {
-  label8->Text = "График: аналитическое решение u(x) и численное решение v(x)";
-  label9->Text = "График: разность аналитического и численного решения";
-  this->chart1->Series[0]->Name = "u(xi)";
-  this->chart1->Series[1]->Name = "v(xi)";
-  this->chart2->Series[0]->Name = "|u(xi)-v(xi)|";
+
 
   // очистка графика и таблицы
   this->chart1->Series[0]->Points->Clear();
   this->chart1->Series[1]->Points->Clear();
   this->chart2->Series[0]->Points->Clear();
   dataGridView1->Rows->Clear();
+
+  label8->Text = "График: аналитическое решение u(x) и численное решение v(x)";
+  label9->Text = "График: разность аналитического и численного решения";
+  this->chart1->Series[0]->Name = "u(xi)";
+  this->chart1->Series[1]->Name = "v(xi)";
+  this->chart2->Series[0]->Name = "|u(xi)-v(xi)|";
+
+
   // определение переменных
   int n = Convert::ToInt32(textBox3->Text); // конвертирует в числа значения из textbox3->Text
   double h = 1. / (double)n;
@@ -72,16 +76,16 @@ System::Void NMLab2::MyForm::button3_Click(System::Object^ sender, System::Event
 
 System::Void NMLab2::MyForm::button2_Click(System::Object^ sender, System::EventArgs^ e)
 {
-  label8->Text = "График: численное решение v(x) и численное решение с половинным шагом v2(x)";
-  label9->Text = "График: разность численных решений в общих узлах";
-  this->chart1->Series[0]->Name = "v(xi)";
-  this->chart1->Series[1]->Name = "v2(xi)";
-  this->chart2->Series[0]->Name = "|v(xi)-v2(xi)|";
-
   this->chart1->Series[0]->Points->Clear();
   this->chart1->Series[1]->Points->Clear();
   this->chart2->Series[0]->Points->Clear();
   dataGridView2->Rows->Clear();
+
+  label8->Text = "График: численное решение v(x) и численное решение с половинным шагом v2(x)";
+  label9->Text = "График: разность численных решений в общих узлах";
+  this->chart1->Series[1]->Name = "v2(xi)";
+  this->chart1->Series[0]->Name = "v(xi)";
+  this->chart2->Series[0]->Name = "|v(xi)-v2(xi)|";
 
   int n = Convert::ToInt32(textBox3->Text); // конвертирует в числа значения из textbox3->Text
   double h = 1. / (double)n;

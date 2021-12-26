@@ -1,7 +1,7 @@
 #pragma once
 #define _USE_MATH_DEFINES // for C++
 #include <iostream>
-#include <cmath>
+#include <math.h>
 #include <vector>
 using namespace std;
 
