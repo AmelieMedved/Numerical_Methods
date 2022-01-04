@@ -1,7 +1,5 @@
 #include "numerical_method.h"
 
-// Tridiagonal matrix algorithm
-
 double k1(double x)
 {
   return sqrt(2) * sin(x);
@@ -64,13 +62,15 @@ double f2_test(double x)
 
 double an_func1(double x)
 {
-  return C1 * exp(x) + C2 * exp(-x) + 1.0;
+  return C1 * exp(x) - C1 * exp(-x) + 1.0;
 }
 
 double an_func2(double x)
 {
   return C3 * exp((M_PI * x) / (2.0 * sqrt(2.0))) + C4 * exp(((-1.0) * (M_PI)*x) / (2.0 * sqrt(2.0))) + ((8.0 * sqrt(2.0)) / (M_PI * M_PI));
 }
+
+/*‘Œ–Ã”À¿ —–≈ƒÕ»’ œ–ﬂÃŒ”√ŒÀ‹Õ» Œ¬*/
 
 //vector<double> calc_a(int n, double (*k1)(double), double (*k2)(double))
 //{
@@ -88,8 +88,8 @@ double an_func2(double x)
 //		res[i] = k2(x + h/(2.0));
 //	  else
 //	  {
-//		double tmp = ((1.0) / h) * ((ksi - x) / k1((x + ksi)/(2.0)) + (x1 - ksi) / k2((x1 + ksi)/(2.0)));
-//		res[i] = 1.0 / tmp;
+//		double den = ((1.0) / h) * ((ksi - x) / k1((x + ksi)/(2.0)) + (x1 - ksi) / k2((x1 + ksi)/(2.0)));
+//		res[i] = 1.0 / den;
 //	  }
 //	x = x1;
 //  }
@@ -164,17 +164,13 @@ vector<double> calc_free(int n, double (*f1)(double), double (*f2)(double))
   return res;
 }
 
-// upper - B
-// bottom - A
 
 vector<double> TMA(int n, vector<double> lower, vector<double> center, vector<double> upper, vector<double> free)
 {
   vector<double> res(n + 1);
   vector<double> alpha(n + 1);
   vector<double> beta(n + 1);
-  //	alpha[1] = 0;
   alpha[1] = upper[0];
-  //	beta[1] = 0;
   beta[1] = free[0];
   for (int i = 2; i < n + 1; i++)
   {
@@ -182,7 +178,6 @@ vector<double> TMA(int n, vector<double> lower, vector<double> center, vector<do
 	alpha[i] = upper[i - 1] / tmp;
 	beta[i] = (free[i - 1] + beta[i - 1] * lower[i - 1]) / tmp;
   }
-  //	res[n] = 0.0;
   res[n] = (free[n] + lower[n] * beta[n]) / (1.0 - lower[n] * alpha[n]);
   for (int i = n - 1; i >= 0; i--)
 	res[i] = alpha[i + 1] * res[i + 1] + beta[i + 1];
@@ -208,6 +203,82 @@ vector<double> an_func(int n)
   return res;
 }
 
+// “≈—“Œ¬€≈ ‘”Õ ÷»»
+
+vector<double> calc_a(int n, double (*k1)(double), double (*k2)(double))
+{
+  vector<double> res(n + 1);
+  res[0] = 0.0;
+  double x = 0.0;
+  double h = 1.0 / (double)n;
+  for (int i = 1; i <= n; i++)
+  {
+	double x1 = x + h;
+	if (x1 <= ksi)
+	{
+	  double den = (double)n * (x1 - x);
+	  res[i] = 1.0 / den;
+	}
+	else
+	  if (x >= ksi)
+	  {
+		double den = (double)n * (2.0 * (x1 - x));
+		res[i] = 1.0 / den;
+	  }
+	  else
+	  {
+		double den = double(n) * ((ksi - x) +(2.0 * (x1 - ksi)));
+		res[i] = 1.0 / den;
+	  }
+	x = x1;
+  }
+  return res;
+}
+
+vector<double> calc_d(int n, double (*q1)(double), double (*q2)(double))
+{
+  vector<double> res(n + 1);
+  res[0] = 0.0;
+  double h = 1.0 / (double)n;
+  double x = h / (2.0);
+  for (int i = 1; i <= n - 1; i++)
+  {
+	double x1 = x + h;
+	if (x1 <= ksi)
+	  res[i] = (double)n * (x1 - x);
+	else
+	  if (x >= ksi)
+		res[i] = (double)n * (ksi*ksi*(x1 - x));
+	  else
+		res[i] = (double)n * (ksi - x + (ksi * ksi * (x1 - ksi)));
+	x = x1;
+  }
+  return res;
+}
+
+vector<double> calc_f(int n, double (*f1)(double), double (*f2)(double))
+{
+  vector<double> res(n + 1);
+  res[0] = 0.0;
+  double h = 1.0 / (double)n;
+  double x = h / (2.0);
+  for (int i = 1; i <= n - 1; i++)
+  {
+	double x1 = x + h;
+	if (x1 <= ksi)
+	  res[i] = (double)n * (x1 - x);
+	else
+	  if (x >= ksi)
+		res[i] = (double)n * ((sqrt(2.0) / 2.0) * (x1 - x));
+	  else
+		res[i] = (double)n * (ksi - x + ((sqrt(2.0) / 2.0) * (x1 - ksi)));
+	x = x1;
+  }
+  return res;
+}
+
+/*–”◊ÕŒ… »Õ“≈√–¿À*/
+
 //vector<double> calc_a(int n, double (*k1)(double), double (*k2)(double))
 //{
 //  vector<double> res(n + 1);
@@ -219,9 +290,9 @@ vector<double> an_func(int n)
 //	double x1 = x + h;
 //	if (x1 <= ksi)
 //	{
-//	  double den = (double)n * ((log(sin(x1/2.0)) - log(cos(x1/2.0)))/(sqrt(2.0)) - (log(sin(x/2.0)) - log(cos(x/2.0)))/(sqrt(2.0)));
+//	  double den = (double)n * ((log(sin(x1 / 2.0)) - log(cos(x1 / 2.0))) / sqrt(2.0) - (log(sin(x / 2.0)) - log(cos(x / 2.0))) / sqrt(2.0));
 //	  res[i] = 1.0 / den;
-//  	}
+//	}
 //	else
 //	  if (x >= ksi)
 //	  {
@@ -230,15 +301,14 @@ vector<double> an_func(int n)
 //	  }
 //	  else
 //	  {
-//		double den = (double)n * ((-1.0)*(0.623225240) - ((log(sin(x / 2.0)) - log(cos(x / 2.0))) / (sqrt(2.0))) + tan(x1) - 1.0);
-//		res[i] = (1.0) / den;
+//		double den = double(n) * (((log(sin(ksi / 2.0)) - log(cos(ksi / 2.0))) / sqrt(2.0) - (log(sin(x / 2.0)) - log(cos(x / 2.0))) / sqrt(2.0)) + (tan(x1) - tan(ksi)));
+//		res[i] = 1.0 / den;
 //	  }
 //	x = x1;
 //  }
-//  
 //  return res;
 //}
-
+//
 //vector<double> calc_d(int n, double (*q1)(double), double (*q2)(double))
 //{
 //  vector<double> res(n + 1);
@@ -249,12 +319,12 @@ vector<double> an_func(int n)
 //  {
 //	double x1 = x + h;
 //	if (x1 <= ksi)
-//	  res[i] = 1.0;
+//	  res[i] = (double)n * (x1 - x);
 //	else
 //	  if (x >= ksi)
 //		res[i] = (double)n * ((x1 * x1 * x1) / 3.0 - (x * x * x) / 3.0);
 //	  else
-//		res[i] = (double)n * (M_PI / 4.0 - x + (x1 * x1 * x1) / 3.0 - (M_PI * M_PI * M_PI) / 192.0);
+//		res[i] = (double)n * (ksi - x + ((x1 * x1 * x1) / 3.0 - (ksi * ksi * ksi) / 3.0));
 //	x = x1;
 //  }
 //  return res;
@@ -270,81 +340,81 @@ vector<double> an_func(int n)
 //  {
 //	double x1 = x + h;
 //	if (x1 <= ksi)
-//	  res[i] = ((-1.0) * (double)n) * ((cos(2.0 * x1) - cos(2.0 * x))/ (2.0));
+//	  res[i] = (double)n * (0.5 * cos(2 * x1) - 0.5 * cos(2 * x));
 //	else
 //	  if (x >= ksi)
 //		res[i] = (double)n * (sin(x1) - sin(x));
 //	  else
-//		res[i] = (double)n * (cos(2.0*x)/2.0 +sin(x1) - 1.0/(sqrt(2.0)));
+//		res[i] = (double)n * ((0.5 * cos(2 * ksi) - 0.5 * cos(2 * x)) - (sin(x1) - sin(ksi)));
 //	x = x1;
 //  }
 //  return res;
 //}
 
-/*##################################################*/
+/*‘Œ–Ã”À¿ “–¿œ≈÷»…*/
 
-vector<double> calc_a(int n, double (*k1)(double), double (*k2)(double))
-{
-  vector<double> res(n + 1);
-  res[0] = 0.0;
-  double x = 0.0;
-  double h = 1.0 / (double)n;
-  for (int i = 1; i <= n; i++)
-  {
-	double x1 = x + h;
-	if (x1 <= ksi)
-	  res[i] = (2.0 * k1(x) * k1(x1)) / (k1(x) + k1(x1));
-	else
-	  if (x >= ksi)
-		res[i] = ((2.0) * k2(x) * k2(x1)) / (k2(x) + k2(x1));
-	  else
-	  {
-		double den = ((1.0) / h) * ((((1.0 / k1(x) + 1.0 / k1(ksi)) / 2.0) * (ksi - x)) + (((1.0 / k2(ksi) + 1.0 / k2(x1)) / 2.0) * (x1 - ksi)));
-		res[i] = 1.0 / den;
-	  }
-	x = x1;
-  }
-  return res;
-}
-
-vector<double> calc_d(int n, double (*q1)(double), double (*q2)(double))
-{
-  vector<double> res(n + 1);
-  res[0] = 0.0;
-  double h = 1.0 / (double)n;
-  double x = h/(2.0);
-  for (int i = 1; i <= n - 1; i++)
-  {
-	double x1 = x + h;
-	if (x1 <= ksi)
-	  res[i] = (q1(x) + q1(x1)) / 2.0;
-	else
-	  if (x >= ksi)
-		res[i] = (q2(x) + q2(x1)) / 2.0;
-	  else
-		res[i] = (1.0 / h) * (((q1(x) + q1(ksi)) / 2.0) * (ksi - x) + (((q2(ksi) + q2(x1)) / 2.0) * (x1 - ksi)));
-	x = x1;
-  }
-  return res;
-}
-
-vector<double> calc_f(int n, double (*f1)(double), double (*f2)(double))
-{
-  vector<double> res(n + 1);
-  res[0] = 0.0;
-  double h = 1.0 / (double)n;
-  double x = h/(2.0);
-  for (int i = 1; i <= n - 1; i++)
-  {
-	double x1 = x + h;
-	if (x1 <= ksi)
-	  res[i] = (f1(x) + f1(x1)) / 2.0;
-	else
-	  if (x >= ksi)
-		res[i] = (f2(x) + f2(x1)) / 2.0;
-	  else
-		res[i] = (1.0 / h) * ((((f1(x) + f1(ksi)) / 2.0) * (ksi - x)) + (((f2(ksi) + f1(x1)) / 2.0) * (x1 - ksi)));
-	x = x1;
-  }
-  return res;
-}
+//vector<double> calc_a(int n, double (*k1)(double), double (*k2)(double))
+//{
+//  vector<double> res(n + 1);
+//  res[0] = 0.0;
+//  double x = 0.0;
+//  double h = 1.0 / (double)n;
+//  for (int i = 1; i <= n; i++)
+//  {
+//	double x1 = x + h;
+//	if (x1 <= ksi)
+//	  res[i] = (2.0 * k1(x) * k1(x1)) / (k1(x) + k1(x1));
+//	else
+//	  if (x >= ksi)
+//		res[i] = ((2.0) * k2(x) * k2(x1)) / (k2(x) + k2(x1));
+//	  else
+//	  {
+//		double den = ((1.0) / h) * ((((1.0 / k1(x) + 1.0 / k1(ksi)) / 2.0) * (ksi - x)) + (((1.0 / k2(ksi) + 1.0 / k2(x1)) / 2.0) * (x1 - ksi)));
+//		res[i] = 1.0 / den;
+//	  }
+//	x = x1;
+//  }
+//  return res;
+//}
+//
+//vector<double> calc_d(int n, double (*q1)(double), double (*q2)(double))
+//{
+//  vector<double> res(n + 1);
+//  res[0] = 0.0;
+//  double h = 1.0 / (double)n;
+//  double x = h/(2.0);
+//  for (int i = 1; i <= n - 1; i++)
+//  {
+//	double x1 = x + h;
+//	if (x1 <= ksi)
+//	  res[i] = (q1(x) + q1(x1)) / 2.0;
+//	else
+//	  if (x >= ksi)
+//		res[i] = (q2(x) + q2(x1)) / 2.0;
+//	  else
+//		res[i] = (1.0 / h) * (((q1(x) + q1(ksi)) / 2.0) * (ksi - x) + (((q2(ksi) + q2(x1)) / 2.0) * (x1 - ksi)));
+//	x = x1;
+//  }
+//  return res;
+//}
+//
+//vector<double> calc_f(int n, double (*f1)(double), double (*f2)(double))
+//{
+//  vector<double> res(n + 1);
+//  res[0] = 0.0;
+//  double h = 1.0 / (double)n;
+//  double x = h/(2.0);
+//  for (int i = 1; i <= n - 1; i++)
+//  {
+//	double x1 = x + h;
+//	if (x1 <= ksi)
+//	  res[i] = (f1(x) + f1(x1)) / 2.0;
+//	else
+//	  if (x >= ksi)
+//		res[i] = (f2(x) + f2(x1)) / 2.0;
+//	  else
+//		res[i] = (1.0 / h) * ((((f1(x) + f1(ksi)) / 2.0) * (ksi - x)) + (((f2(ksi) + f1(x1)) / 2.0) * (x1 - ksi)));
+//	x = x1;
+//  }
+//  return res;
+//}

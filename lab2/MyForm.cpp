@@ -46,21 +46,21 @@ System::Void NMLab2::MyForm::button1_Click(System::Object^ sender, System::Event
 
   for (int i = 0; i < n + 1; i++)
   {
-    this->chart1->Series[0]->Points->AddXY(x, res1[i]); // построение графика аналитического решения
-    this->chart1->Series[1]->Points->AddXY(x, res2[i]); // построение графика численного решения
-    dataGridView1->Rows->Add(); // добавить новую строку
-    dataGridView1->Rows[i]->Cells[0]->Value = i; // № узла
-    dataGridView1->Rows[i]->Cells[1]->Value = x; // значение i-го узла
-    dataGridView1->Rows[i]->Cells[2]->Value = res1[i]; // значение аналитического решения
-    dataGridView1->Rows[i]->Cells[3]->Value = res2[i]; // значение численного решения
+    //this->chart1->Series[0]->Points->AddXY(x, res1[i]); // построение графика аналитического решения
+    //this->chart1->Series[1]->Points->AddXY(x, res2[i]); // построение графика численного решения
+    //dataGridView1->Rows->Add(); // добавить новую строку
+    //dataGridView1->Rows[i]->Cells[0]->Value = i; // № узла
+    //dataGridView1->Rows[i]->Cells[1]->Value = x; // значение i-го узла
+    //dataGridView1->Rows[i]->Cells[2]->Value = res1[i]; // значение аналитического решения
+    //dataGridView1->Rows[i]->Cells[3]->Value = res2[i]; // значение численного решения
     abs_diff = abs(res2[i] - res1[i]);
-    this->chart2->Series[0]->Points->AddXY(x, abs_diff);
+    //this->chart2->Series[0]->Points->AddXY(x, abs_diff);
     if (abs_diff > eps)
     {
       eps = abs_diff; // погрешность растет
       devX = i;
     }
-    dataGridView1->Rows[i]->Cells[4]->Value = abs_diff; // значение модуля разности решений
+    //dataGridView1->Rows[i]->Cells[4]->Value = abs_diff; // значение модуля разности решений
     x = x + h;
   }
   
@@ -104,21 +104,21 @@ System::Void NMLab2::MyForm::button2_Click(System::Object^ sender, System::Event
 
   for (int i = 0; i < n + 1; i++)
   {
-    this->chart1->Series[0]->Points->AddXY(x, res1[i]); // построение графика аналитического решения
-    this->chart1->Series[1]->Points->AddXY(x, res2[2 * i]); // построение графика численного решения
-    dataGridView2->Rows->Add(); // добавить новую строку
-    dataGridView2->Rows[i]->Cells[0]->Value = i; // № узла
-    dataGridView2->Rows[i]->Cells[1]->Value = x; // значение i-го узла
-    dataGridView2->Rows[i]->Cells[2]->Value = res1[i]; // значение аналитического решения
-    dataGridView2->Rows[i]->Cells[3]->Value = res2[2 * i]; // значение численного решения
+    //this->chart1->Series[0]->Points->AddXY(x, res1[i]); // построение графика аналитического решения
+    //this->chart1->Series[1]->Points->AddXY(x, res2[2 * i]); // построение графика численного решения
+    //dataGridView2->Rows->Add(); // добавить новую строку
+    //dataGridView2->Rows[i]->Cells[0]->Value = i; // № узла
+    //dataGridView2->Rows[i]->Cells[1]->Value = x; // значение i-го узла
+    //dataGridView2->Rows[i]->Cells[2]->Value = res1[i]; // значение аналитического решения
+    //dataGridView2->Rows[i]->Cells[3]->Value = res2[2 * i]; // значение численного решения
     abs_diff = abs(res1[i] - res2[2 * i]);
-    this->chart2->Series[0]->Points->AddXY(x, abs_diff);
+    //this->chart2->Series[0]->Points->AddXY(x, abs_diff);
     if (abs_diff > eps)
     {
       eps = abs_diff; // погрешность растет
       devX = i;
     }
-    dataGridView2->Rows[i]->Cells[4]->Value = abs_diff; // значение модуля разности решений
+    //dataGridView2->Rows[i]->Cells[4]->Value = abs_diff; // значение модуля разности решений
     x = x + h;
   }
  
